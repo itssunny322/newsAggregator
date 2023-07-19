@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: API Design for NewsAggregator Service
+  description: Added some endpoints for NewsAggregator Service
+
+servers:
+  - url: http://13.233.115.197:80/v1
+    description: Local server
+
+paths:
+  /login:
+    post:
+      summary: Login
+      description: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      __v:
+                        type: integer
+                example:
+                  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                  user:
+                    id: '1'
+                    username: 'sunny'
+                    email: 'sunnys@example.com'
+                    role: 'user'
+                    createdAt: '2023-05-24T10:00:00Z'
+                    updatedAt: '2023-05-24T12:30:00Z'
+                    __v: 1
+
+  /category/:
+    get:
+      summary: Get all Categories
+      description: Get all categories
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatedAt:
+                      type: string
+              example:
+                - _id: '1'
+                  name: 'Technology'
+                  createdAt: '2023-05-24T10:00:00Z'
+                  updatedAt: '2023-05-24T12:30:00Z'
+
+  '/feed/{category_id}/':
+    get:
+      summary: Get all news feeds from particular category
+      description: Get all feeds from a particular category
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    title:
+                      type: string
+                    link:
+                      type: string
+                    pubDate:
+                      type: string
+                    category:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatedAt:
+                      type: string
+                    source:
+                      type: object
+                example:
+                  - _id: '1'
+                    title: 'Example News'
+                    link: 'http://example.com/news'
+                    pubDate: '2023-05-24T15:00:00Z'
+                    category: 'Technology'
+                    createdAt: '2023-05-24T10:00:00Z'
+                    updatedAt: '2023-05-24T12:30:00Z'
+                    source:
+                      name: 'Example Source'
+
+  '/group/news/':
+    get:
+      summary: Get all similar news feeds
+      description: Get all similar news feeds
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    news_group_id:
+                      type: string
+                    news_item_id:
+                      type: string
+                example:
+                  - _id: '1'
+                    news_group_id: '1'
+                    news_item_id: '1'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

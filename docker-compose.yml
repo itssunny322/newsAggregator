@@ -1,0 +1,41 @@
+version: '3'
+services:
+  web:
+    image: 410696592155.dkr.ecr.ap-south-1.amazonaws.com/news-aggregator:RootPush
+    command: gunicorn --bind 0.0.0.0:8000 news.wsgi --workers=4
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ecs-cluster-web
+        awslogs-region: ap-south-1
+        awslogs-stream-prefix: django
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    expose:
+      - "8000"
+    networks:
+      - django-network
+  nginx:
+    image: 410696592155.dkr.ecr.ap-south-1.amazonaws.com/news-aggregator:NginxPush
+    restart: always
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "80:80"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: ecs-cluster-nginx
+        awslogs-region: ap-south-1
+        awslogs-stream-prefix: web
+    depends_on:
+      - web
+    networks:
+      - django-network
+networks:
+  django-network:
+volumes:
+  media_volume:
+  static_volume:

@@ -1,0 +1,87 @@
+@startuml
+
+title <size :30> DB Design for News Aggregator assignment </size> 
+skinparam linetype ortho
+
+
+entity "user" as user {
+  * id: String
+  ----
+  *preference_category : String <FK>
+  first_name: String
+  last_name: String
+  *email: String
+  *username : String
+  *password: String
+  is_active: String
+  created_at: String
+  updated_at: String
+}
+
+entity "category" as category {
+  * id: String
+  ----
+  *name: String
+}
+
+entity "agency" as agency {
+  * id: String
+  ----
+  *name: String
+}
+
+entity "feed" as feed {
+  * id: String
+  ----
+  *agency_id: String <FK>
+  *category_id: String <FK>
+  *url: String
+  created_at: String
+  updated_at: String
+}
+
+entity "news" as news {
+  * id: String
+  ----
+  *feed_id: String <FK>
+  *title: String
+  *description: String
+  *published_date: String
+  *url : String
+  created_at: String
+  updated_at: String
+}
+
+entity "news_group" as news_group {
+  * id: String
+  ----
+  *primary_news_id: String <FK>
+  secondary_news_id: String <FK>
+  created_at: String
+  updated_at: String
+}
+
+entity "secondary_news" as secondaryNews {
+  * id: String
+  ----
+  *news_group_id: String <FK>
+  *news_item_id: String <FK>
+  created_at: String
+  updated_at: String
+}
+
+
+user ||--|{ category
+category }|--|| feed
+feed ||--|{ agency
+news }|--|| feed
+news ||--|| secondaryNews
+news ||--|| news_group
+news_group ||--|{ secondaryNews
+news -[hidden]- feed
+secondaryNews -[hidden]- news_group
+
+
+
+
+@enduml
